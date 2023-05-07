@@ -1,12 +1,13 @@
 import pickle
 import sys
 import time
+import os
 
 def type_out_text(text):
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
-        time.sleep(0.000001)
+        time.sleep(0.05)
     print()
 
 playerName = input("What is your name?")
@@ -26,6 +27,8 @@ input("Are you ready to begin this epic quest?\n")
 time.sleep(2)
 type_out_text("I don't care if you are or not because you don't really have an option...Good luck!\n")
 time.sleep(1)
+
+os.system('clear')
 
 
 class Room():
