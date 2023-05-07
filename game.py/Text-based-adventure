@@ -33,11 +33,24 @@ if play_intro == "yes":
 elif play_intro == "no":
     type_out_text("Good luck!")
 
-else:
-    print("Invalid Command")
-
 os.system('clear')
 
+class NPC():
+    def __init__(self, name, description, dialogue=[]):
+        self.name = name
+        self.description = description
+        self.dialogue = dialogue
+
+    def talk(self):
+        for line in self.dialogue:
+            type_out_text(line)
+
+# Create an NPC instance
+librarian = NPC("Librarian", "A balding man staring at you in the corner.", 
+                  ["Hello, I am Kurg. I have been a librarian here for many years.",
+                   "I am an expert on potions. I was a good friend to the the great King Magnus.",
+                   "I was devastated when he was found dead. So much so that I investigated his death."
+                   "I found some clues but I was never able to piece them together."])
 
 class Room():
     def __init__(self, name, description, exits, items = []):
@@ -82,6 +95,13 @@ class Game():
                     if room.name == self.current_room.exits[command]:
                         self.current_room = room
                         break
+
+            elif command == "talk":
+                for npc in self.current_room.npcs:
+                    type_out_text(f"You talk to {npc.name}.")
+                    npc.talk()
+                    self.inventory.append("Clues")
+                    break
             
             elif command == "instructions":
                 print(instructions)
@@ -120,6 +140,9 @@ class Game():
                     type_out_text("Congratulations! You have unlocked the treasure chest and found the treasure!")
                     break
                 
+                elif item_name == "Clues" and "Clues" in self.inventory:
+                    type_out_text("")
+
                 elif item_name == "book" and "book" in self.inventory and self.current_room.name == "Library":
                     type_out_text("You read a page of the book. It talks about an ancient potion of invisibility.\n")
                     self.inventory.remove("book")
