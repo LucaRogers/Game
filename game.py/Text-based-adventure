@@ -19,7 +19,7 @@ To navigate the castle, simply type the direction of one of the available exits.
 To pick an item, input 'get' and the name of the item.
 To use an item input 'use' and then the item name.
 To save input 'save' to load input 'load'.
-To see your current inventory input 'i'
+To quit input 'quit'.
 To see this message again input 'instructions'"""
 type_out_text(instructions)
 input("Are you ready to begin this epic quest?\n")
@@ -63,7 +63,7 @@ class Game():
     def play(self):
         while True:
             self.current_room.display()
-            command = input("\nWhat would you like to do?\n")
+            command = input(f"\nWhat would you like to do?\n(Inventory:{self.inventory})\n")
             if command in self.current_room.exits:
                  for room in self.rooms:
                     if room.name == self.current_room.exits[command]:
@@ -73,8 +73,8 @@ class Game():
             elif command == "instructions":
                 print(instructions)
             
-            elif command == "i":
-                print(self.inventory)
+            elif command == "quit":
+                break
             
             elif command == "save":
                 with open("save_game.pickle", "wb") as f:
@@ -103,7 +103,7 @@ class Game():
             elif command.startswith("use "):
                 item_name = command[4:]
                 
-                if item_name == "Key" and "key" in self.inventory and self.current_room.name == "Treasure Room":
+                if item_name == "key" and "key" in self.inventory and self.current_room.name == "Treasure Room":
                     type_out_text("Congratulations! You have unlocked the treasure chest and found the treasure!")
                     break
                 
@@ -114,8 +114,9 @@ class Game():
                 elif item_name == "food" and "food" in self.inventory and self.current_room.name == "Cellar":
                     type_out_text("You give an old man some food. He thanks you by giving you a gold coin.")
                     self.inventory.append("coin")
+                    self.inventory.remove("food")
                     
-                elif item_name == "coin" and "coin" in self.inventory and self.current_room.name == "Dungeon":
+                elif item_name == "coin" and "coin" in self.inventory and self.current_room.name == "Dungeon Cell":
                     type_out_text("You pay a man and he gives you a potion in return\n")
                     self.inventory.remove("coin")
                     self.inventory.append("potion")
@@ -123,19 +124,33 @@ class Game():
                 elif item_name == "sword" and "sword" in self.inventory and self.current_room.name == "Cellar":
                     type_out_text("The old man was your only chance...You lose.")
                     break
-                    
-                elif item_name == "sword" and "sword" in self.inventory and self.current_room.name == "Sorcerers Room":
-                    type_out_text("You stab the Sorcerer. He is dead. A key falls out of his cloak.\nYou take it.")
-                    self.inventory.remove("sword")
-                    self.inventory.append("Key")
+
                 
-                elif item_name == "potion" and "potion" in self.inventory and self.current_room.name == "Sorcerers Room":
-                    type_out_text("You use the potion. It startles the cloaked figure.\nOut of fear it turns around and slashes you with a sword.\nBetter luck next time.")
+                elif item_name == "sword" and "sword" in self.inventory and self.current_room.name == "Dungeon Cell":
+                    if "potion" not in self.inventory:
+                        type_out_text("You stab the cloaked figure. That was sad.")
+                        self.inventory.remove("sword")
+                        break
+                    else:
+                        type_out_text("You stab the cloaked figure. He was your only chance to win.")
+                        self.inventory.remove("sword")
+                
+                elif item_name == "sword" and "sword" in self.inventory and self.current_room.name == "Sorcerers Room":
+                    type_out_text("You attempt to stab the Sorcerer. He easily avoids it.\nHe uses a spell to kill you. You are dead.")
                     break
                 
-                elif item_name == "potion" and "potion" in self.inventory:
-                    type_out_text("You drink the potion. Nothing seems to have happened.\nI guess that was useless.")
-                    self.inventory.remove("potion")
+                elif item_name == "potion" and "potion" in self.inventory and self.current_room.name == "Sorcerers Room":
+                    if "sword" in self.inventory:
+                        type_out_text("The man who gave you the potion alerted the Sorcerer. The Sorcerer was expecting your arrival.\nHe kills you with a powerfull spell.\n")
+                        break
+                    else:
+                        type_out_text("You use the potion. It gives you invisibility.\nThe Sorcerer is looking around for you.\nHe casts as spell that rebounds off a mirror.\nIt hits him right in the face...He is dead.\nYou pick up a key that falls out of his pocket.")
+                        self.inventory.remove("potion")
+                        self.inventory.append("key")
+
+                elif item_name == "potion" and "potion" in self.inventory and self.current_room.name == "Dungeon Cell":
+                    type_out_text("You use the potion. It startles the cloaked figure.\nOut of fear it turns around and slashes you with a sword.\nBetter luck next time.")
+                    break
                     
                 else:
                     type_out_text("You can't use that here.")
@@ -160,7 +175,7 @@ room15 = Room("Dungeon Cell", "You are closed off by iron bars. But wait... It l
 room16 = Room("Torture Chamber", "A dead man lays in a corner. There is a basket of heads near a guillotine. They look fresh.\nThere is no turning back now", {"south": "Sorcerers Room"})
 room17 = Room("Dungeon Hallway", "It is very tight and oddly quiet. It smells odd.", {"west": "Dungeon Cell", "east": "Torture Chamber"})
 room18 = Room("Sorcerers Room", "There is a powerful Sorcerer ready to kill you. You must defend yourself.", {"south": "Treasure Room"})
-room19 = Room("Treasure Room", "You have found the treasure room!", {}, ["treasure chest"])      
+room19 = Room("Treasure Room", "You have found the treasure room!", {}, ["treasure chest"])    
 
 game = Game()
 game.add_room(room1)
