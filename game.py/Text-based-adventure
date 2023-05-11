@@ -60,6 +60,7 @@ class Game():
         self.rooms = []
         self.current_room = None
         self.inventory = []
+        self.smart = False
         self.instructions = """\nINSTRUCTIONS
 To navigate the castle, simply type the direction of one of the available exits.
 (Ex. 'north, south, east, west')
@@ -89,8 +90,8 @@ To see this message again input 'i'"""
             
             elif command == "talk" and self.current_room.name == "Library":
                 type_out_text("You talk to a librarian who was hiding in the corner.")
-                type_out_text("Hello, I am Kurg. I have been a librarian here for many years.\nI am an expert on potions. I was a good friend to the the great King Magnus.\nI was devastated when he was found dead. So much so that I investigated his death.\nI found some clues but I was never able to piece them together.\nIf you do figure out the solution though, you will be rewarded.\nThe clues are found in the Storeroom. There is a hidden trap door there.\nTo go inside it simply input 'trap door' while in the storeroom.\n")
-            
+                type_out_text("'Hello, I am Kurg. I have been a librarian here for many years.\nI am an expert on potions. I was a good friend to the the great King Magnus.\nI was devastated when he was found dead. So much so that I investigated his death.\nI found some clues but I was never able to piece them together.\nIf you do figure out the solution though, you will be rewarded.\nThe clues are found in the Storeroom. There is a hidden trap door there.\nTo go inside it simply input 'trap door' while in the storeroom.'\n")
+                time.sleep(2)
            
             elif command == "instructions":
                 print(instructions)
@@ -102,7 +103,11 @@ To see this message again input 'i'"""
                 type_out_text(self.instructions)
 
             elif command == "trap door" and self.current_room.name == "Storeroom":
+                type_out_text("achievement: Detective")
                 self.current_room = room20
+
+            elif command == "read" and self.current_room.name == "Graveyard":
+                type_out_text("The sorcerer is the man who murdered the late king Magnus.\nThe only way to defeat him is to use one of his potions.\nBeware of enemies for they are disguised as friends and the will betray you.\nSometimes leaving somebody alive will cost you your life.")
                 
             
             elif command == "save":
@@ -133,9 +138,13 @@ To see this message again input 'i'"""
                 item_name = command[4:]
                 
                 if item_name == "key" and "key" in self.inventory and self.current_room.name == "Treasure Room":
-                    type_out_text("Congratulations! You have unlocked the treasure chest and found the treasure!")
-                    break
-                
+                    if self.smart == False:
+                        type_out_text("You open the treasure chest but nothing is there. You must have missed something.\nHint: Talk to the librarian.")
+                        break
+                    if self.smart == True:
+                        type_out_text("You found the only way to aquire the treasure. Congratulations! You win!")
+                        break
+                    
                 elif item_name == "Clues" and "Clues" in self.inventory:
                     type_out_text("")
 
@@ -203,7 +212,7 @@ To see this message again input 'i'"""
                 
 room1 = Room("Entrance", "You are standing in front of a castle entrance.", {"north": "Foyer"})
 room2 = Room("Foyer", "You are standing in a grand foyer.", {"north": "Library", "east": "Dining Room", "south": "Entrance", "west": "Oratory"})
-room3 = Room("Library", "You are standing in a large library.", {"south": "Foyer"}, ["book"])
+room3 = Room("Library", "You are standing in a large library. There is a librarian in the corner.", {"south": "Foyer"}, ["book"])
 room4 = Room("Dining Room", "You are standing in a spacious dining room.", {"west": "Foyer", "south": "Kitchen"})
 room5 = Room("Kitchen", "You are standing in a busy kitchen.", {"north": "Dining Room", "east": "Garden"}, ["food"])    
 room6 = Room("Garden", "You are standing in a beautiful garden with colorful flowers.", {"east": "Fountain", "west": "Kitchen"})
