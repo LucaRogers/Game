@@ -35,23 +35,6 @@ elif play_intro == "no":
 
 os.system('clear')
 
-class NPC():
-    def __init__(self, name, description, dialogue=[]):
-        self.name = name
-        self.description = description
-        self.dialogue = dialogue
-
-    def talk(self):
-        for line in self.dialogue:
-            type_out_text(line)
-
-# Create an NPC instance
-librarian = NPC("Librarian", "A balding man staring at you in the corner.", 
-                  ["Hello, I am Kurg. I have been a librarian here for many years.",
-                   "I am an expert on potions. I was a good friend to the the great King Magnus.",
-                   "I was devastated when he was found dead. So much so that I investigated his death."
-                   "I found some clues but I was never able to piece them together."])
-
 class Room():
     def __init__(self, name, description, exits, items = []):
         self.name = name
@@ -77,6 +60,14 @@ class Game():
         self.rooms = []
         self.current_room = None
         self.inventory = []
+        self.instructions = """\nINSTRUCTIONS
+To navigate the castle, simply type the direction of one of the available exits.
+(Ex. 'north, south, east, west')
+To pick an item, input 'get' and the name of the item.
+To use an item input 'use' and then the item name.
+To save input 'save' to load input 'load'.
+To quit input 'quit'.
+To see this message again input 'i'"""
         
     def add_room(self, room):
         self.rooms.append(room)
@@ -95,19 +86,24 @@ class Game():
                     if room.name == self.current_room.exits[command]:
                         self.current_room = room
                         break
-
-            elif command == "talk":
-                for npc in self.current_room.npcs:
-                    type_out_text(f"You talk to {npc.name}.")
-                    npc.talk()
-                    self.inventory.append("Clues")
-                    break
             
+            elif command == "talk" and self.current_room.name == "Library":
+                type_out_text("You talk to a librarian who was hiding in the corner.")
+                type_out_text("Hello, I am Kurg. I have been a librarian here for many years.\nI am an expert on potions. I was a good friend to the the great King Magnus.\nI was devastated when he was found dead. So much so that I investigated his death.\nI found some clues but I was never able to piece them together.\nIf you do figure out the solution though, you will be rewarded.\nThe clues are found in the Storeroom. There is a hidden trap door there.\nTo go inside it simply input 'trap door' while in the storeroom.\n")
+            
+           
             elif command == "instructions":
                 print(instructions)
             
             elif command == "quit":
                 break
+            
+            elif command == "i":
+                type_out_text(self.instructions)
+
+            elif command == "trap door" and self.current_room.name == "Storeroom":
+                self.current_room = room20
+                
             
             elif command == "save":
                 with open("save_game.pickle", "wb") as f:
@@ -223,7 +219,9 @@ room15 = Room("Dungeon Cell", "You are closed off by iron bars. But wait... It l
 room16 = Room("Torture Chamber", "A dead man lays in a corner. There is a basket of heads near a guillotine. They look fresh.\nThere is no turning back now", {"south": "Sorcerers Room"})
 room17 = Room("Dungeon Hallway", "It is very tight and oddly quiet. It smells odd.", {"west": "Dungeon Cell", "east": "Torture Chamber"})
 room18 = Room("Sorcerers Room", "There is a powerful Sorcerer ready to kill you. You must defend yourself.", {"south": "Treasure Room"})
-room19 = Room("Treasure Room", "You have found the treasure room!", {}, ["treasure chest"])    
+room19 = Room("Treasure Room", "You have found the treasure room!", {}, ["treasure chest"])
+room20 = Room("Trap Door", "There is a trap door on the foor you didn't see before", {"north": "Graveyard", "south": "Storeroom"})
+room21 = Room("Graveyard", "There is some writing on a tombstone that you want to read.", {"south":"Trap Door"}) 
 
 game = Game()
 game.add_room(room1)
@@ -245,5 +243,7 @@ game.add_room(room16)
 game.add_room(room17)
 game.add_room(room18)
 game.add_room(room19)
+game.add_room(room20)
+game.add_room(room21)
 
 game.start()
