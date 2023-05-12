@@ -35,7 +35,6 @@ To see this message again input 'i'"""
 elif play_intro == "no":
     type_out_text("Good luck!")
 
-
 os.system('clear')
 
 class Room():
@@ -45,7 +44,6 @@ class Room():
         self.exits = exits
         self.items = items
 
-        
     def display(self):
         print(self.name)
         type_out_text(self.description)
@@ -56,7 +54,6 @@ class Room():
             print("Items: ")
             for item in self.items:
                 print(item)
-
 
 class Game():
     def __init__(self):
@@ -94,7 +91,11 @@ To see this message again input 'i'"""
             elif command == "talk" and self.current_room.name == "Library":
                 if self.smart == False:
                     type_out_text("You talk to a librarian who was hiding in the corner.")
-                    type_out_text("'Hello, I am Kurg. I have been a librarian here for many years.\nI am an expert on potions. I was a good friend to the the great King Magnus.\nI was devastated when he was found dead. So much so that I investigated his death.\nI found some clues but I was never able to piece them together.\nIf you do figure out the solution though, you will be rewarded.\nThe clues are found in the Storeroom. There is a hidden trap door there.\nTo go inside it simply input 'trap door' while in the storeroom.'\n")
+                    type_out_text("""'Hello, I am Kurg. I have been a librarian here for many years.I am an expert on potions. 
+I was a good friend to the the great King Magnus.\nI was devastated when he was found dead. 
+So much so that I investigated his death.\nI found some clues but I was never able to piece them together.
+If you do figure out the solution though, you will be rewarded.\nThe clues are found in the Storeroom.
+There is a hidden trap door there.To go inside it simply input 'trap door' while in the storeroom.'""")
                     time.sleep(2)
                 elif self.smart == True:
                     type_out_text("I see you have discovered the clues...Now the treasure is yours. I am at peace.")
@@ -120,13 +121,13 @@ To see this message again input 'i'"""
             
             elif command == "save":
                 with open("save_game.pickle", "wb") as f:
-                    pickle.dump((self.current_room, self.inventory), f)
+                    pickle.dump((self.current_room, self.inventory, self.smart, self.), f)
                 type_out_text("Game saved.")
                     
             elif command == "load":
                 try:
                     with open("save_game.pickle", "rb") as f:
-                        self.current_room, self.inventory = pickle.load(f)
+                        self.current_room, self.inventory, self.smart = pickle.load(f)
                     type_out_text("Game loaded.")
                 except FileNotFoundError:
                     type_out_text("No save file found.")
